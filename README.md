@@ -15,4 +15,4 @@ Create Video Thumbnails. 创建视频缩略图，网格状，可自定义列数�
 如遇到报错可能为视频不完整所致，具体视报错情况自行调试。
 
 效果图如下：
-![image](https://github.com/Amii-Henin/Video-Thumbnails-Creater/blob/main/FormD%20T1%20-%20The%20Ultimate%20Sub-10L%20Case!_thumb.jpg)
+![image](https://github.com/Amii-Henin/Video-Thumbnails-Creater/blob/main/sample.jpg)
