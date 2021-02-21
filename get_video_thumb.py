@@ -11,21 +11,31 @@ from PIL import Image, ImageDraw, ImageFont
 Image.MAX_IMAGE_PIXELS = None
 
 alldirs = []
-now = time.strftime('%Y-%m-%d_%H%M%S',time.localtime(time.time()))
+now = time.strftime('%Y-%m-%d_%H-%M-%S',time.localtime(time.time()))
 
 def main():
     alldirs.append(rootpath)
     get_dirs(rootpath)
+    get_dirs_check(alldirs)
+    # print (alldirs)
     for path in alldirs:
         begin(path)
+        # time.sleep(200)
 
-def get_dirs(root_path):        #遍历目录
-    dirs = os.listdir(root_path)
-    for dir in dirs:
-        dir = root_path + '\\' + dir
-        if os.path.isdir(dir):
-            alldirs.append(dir)
-            get_dirs(dir)
+def get_dirs(root_path):    #遍历目录
+    dirs = os.scandir(root_path)
+    # print (root_path)
+    for x in dirs:
+        if x.is_dir():
+            if x.name != '$RECYCLE.BIN' and x.name != 'System Volume Information':
+                alldirs.append(root_path + '\\' + x.name)
+                get_dirs(root_path + '\\' + x.name)
+
+def get_dirs_check(alldirs):    #遍历目录检查机制
+    if re.search('\\\\\\\\',alldirs[-1]):
+        for x in range(len(alldirs)):
+            temp = alldirs[x].replace('\\\\','\\')
+            alldirs[x] = temp
 
 def begin(path):        #开始程序
     files,nfiles,path_files = get_list(path)
@@ -38,9 +48,8 @@ def begin(path):        #开始程序
                 print ('视频长度小于10s，跳过____',files[x])
                 continue
         except:
-            with open('get_video_thumb_errlog_' + str(now) + '.txt','a+',encoding='utf-8') as f:
-                f.write(path_files[x] + '\n')
-                print ('\n【【【Error File】】】',path_files[x],'\n')    #运行出错，保留日志
+            save_log('get_video_thumb_errlog_' + str(now) + '.txt','a+',path_files[x] + '\n') as f:
+            print ('\n【【【Error File】】】',path_files[x],'\n')    #运行出错，保留日志
 
 def get_thumb(file,nfile,path_file,path):       #获取视频截图并生成缩略图总图
     temp = 0
@@ -49,6 +58,7 @@ def get_thumb(file,nfile,path_file,path):       #获取视频截图并生成缩�
     tsize_time = int((36 * xs)//1)      #时间信息文字大小
     logo = "-- by QY"
     byte,size,bl,width,height,fps,sec,vtime = get_info(path_file)
+    # print(byte,size,bl,width,height,fps,sec,vtime)
     img = Image.open(BytesIO(get_frame(path_file, sec//2)))
     if (img.size[0]!=width):            #判断长宽是否颠倒并纠正
         temp = width
@@ -81,13 +91,14 @@ def get_thumb(file,nfile,path_file,path):       #获取视频截图并生成缩�
         time = jg * i + jg
         if (sec - time < 3):                    #截图时间与视频总时长过于接近时回退以避免截图出错
             time -= 3
-        # if (time == (jg*20)):                 #调试
-        #    time -= jg
+        # if (time == (jg*81)):                 #调试
+        #    time -= (jg/2)//1
+        tt = '0' + str(datetime.timedelta(seconds=time))
         frame = get_frame(path_file, time)      #截图
         img = Image.open(BytesIO(frame)).resize((width_each_pic,height_each_pic),Image.ANTIALIAS)
         font = ImageFont.truetype('fonts\\杨任东竹石体-Heavy.ttf',tsize_time)
         draw = ImageDraw.Draw(img)              #下为绘制截图时间至截图
-        draw.text((width_each_pic - 140, 2),text=vtime,fill="white",font=font,stroke_width=3,stroke_fill="black")
+        draw.text((width_each_pic - 140, 2),text=tt,fill="white",font=font,stroke_width=3,stroke_fill="black")
         fullimg.paste(img,(lw,lh))              #粘贴截图至总图
         lw += width_each_pic
         if ((i+1)%col_default==0):              #判断是否需要换行
@@ -125,7 +136,7 @@ def get_info(path_file):        #获取并返回视频基本信息
 
 def get_list(path):     #获取并返回目录下视频文件及目录等
     all_files = os.listdir(path)
-    rule = r"\.(avi|wmv|wmp|wm|asf|mpg|mpeg|mpe|m1v|m2v|mpv2|mp2v|ts|tp|tpr|trp|vob|ifo|ogm|ogv|mp4|m4v|m4p|m4b|3gp|3gpp|3g2|3gp2|mkv|rm|ram|rmvb|rpm|flv|swf|mov|qt|amr|nsv|dpg|m2ts|m2t|mts|dvr-ms|k3g|skm|evo|nsr|amv|divx|webm|wtv|f4v|mxf)$"
+    rule = r"\.(avi|wmv|wmp|wm|asf|mpg|mpeg|mpe|m1v|m2v|mpv2|mp2v|ts|tp|tpr|trp|vob|ifo|ogm|ogv|mp4|m4v|m4p|m4b|3gp|3gpp|3g2|3gp2|mkv|rm|ram|rmvb|rpm|flv|swf|mov|qt|nsv|dpg|m2ts|m2t|mts|dvr-ms|k3g|skm|evo|nsr|amv|divx|webm|wtv|f4v|mxf)$"
     path_file_list = []
     file_list = []
     nfile_list = []
@@ -161,6 +172,9 @@ def get_row(sec):       #设定并返回图片个数、行数、间隔
     row = int((num + col_default -1) // col_default)
     return (num, row, jg)
 
+def save_log(logname,mode,mess):     #写入日志
+    with open (logname,mode,encoding='utf-8') as f:
+        f.write(mess)
 
 if __name__ == '__main__':
     rootpath = input('请输入文件夹地址：')
