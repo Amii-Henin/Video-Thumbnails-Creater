@@ -18,9 +18,10 @@ def main():
     get_dirs(rootpath)
     get_dirs_check(alldirs)
     # print (alldirs)
+    save_log('get_video_thumb_log.json','a+',now + ':{\n')
     for path in alldirs:
         begin(path)
-        # time.sleep(200)
+    save_log('get_video_thumb_log.json','a+','}\n')
 
 def get_dirs(root_path):    #遍历目录
     dirs = os.scandir(root_path)
@@ -45,13 +46,17 @@ def begin(path):        #开始程序
             continue
         try:
             if get_thumb(files[x],nfiles[x],path_files[x],path):        #跳过长度过短的视频
+                save_log('get_video_thumb_log.json','a+','0],\n')
                 print ('视频长度小于10s，跳过____',files[x])
                 continue
+            save_log('get_video_thumb_log.json','a+','\"Done\"],\n')
         except:
             save_log('get_video_thumb_errlog_' + str(now) + '.txt','a+',path_files[x] + '\n')
+            save_log('get_video_thumb_log.json','a+','0,\"err\"],\n')
             print ('\n【【【Error File】】】',path_files[x],'\n')    #运行出错，保留日志
 
 def get_thumb(file,nfile,path_file,path):       #获取视频截图并生成缩略图总图
+    save_log('get_video_thumb_log.json','a+','    [\"' + path_file + '\",')
     temp = 0
     xs = width_default/3840             #比例系数
     tsize_info = int((64 * xs)//1)      #视频信息文字大小
@@ -76,6 +81,7 @@ def get_thumb(file,nfile,path_file,path):       #获取视频截图并生成缩�
     lw = 0                                      #左上角坐标宽度
     lh = int((300 * xs)//1)                     #左上角坐标高度
     height_full = height_each_pic * row + lh    #总图高度
+    save_log('get_video_thumb_log.json','a+',str(num) + ',')
     print ('图片数：',num,'  行数：',row,'  ',file)
     fullimg = Image.new('RGB',(width_default,height_full),"white")      #新建总图底图
     
@@ -88,6 +94,7 @@ def get_thumb(file,nfile,path_file,path):       #获取视频截图并生成缩�
     fullimg.paste(vinfo_img,(0,0))              #粘贴信息条至总图
     for i in range(num):                        #循环截取视频截图并粘贴至总图
         # print (i)
+        save_log('get_video_thumb_log.json','a+',str(i) + ',')
         time = jg * i + jg
         if (sec - time < 3):                    #截图时间与视频总时长过于接近时回退以避免截图出错
             time -= 3
