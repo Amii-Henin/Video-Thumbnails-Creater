@@ -56,7 +56,7 @@ def get_thumb(file,nfile,path_file,path):       #获取视频截图并生成缩�
     xs = width_default/3840             #比例系数
     tsize_info = int((64 * xs)//1)      #视频信息文字大小
     tsize_time = int((36 * xs)//1)      #时间信息文字大小
-    logo = "-- by QY"
+    logo = "-- by Amii"
     byte,size,bl,width,height,fps,sec,vtime = get_info(path_file)
     # print(byte,size,bl,width,height,fps,sec,vtime)
     img = Image.open(BytesIO(get_frame(path_file, sec//2)))
