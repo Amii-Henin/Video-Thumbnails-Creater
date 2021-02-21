@@ -48,7 +48,7 @@ def begin(path):        #开始程序
                 print ('视频长度小于10s，跳过____',files[x])
                 continue
         except:
-            save_log('get_video_thumb_errlog_' + str(now) + '.txt','a+',path_files[x] + '\n') as f:
+            save_log('get_video_thumb_errlog_' + str(now) + '.txt','a+',path_files[x] + '\n')
             print ('\n【【【Error File】】】',path_files[x],'\n')    #运行出错，保留日志
 
 def get_thumb(file,nfile,path_file,path):       #获取视频截图并生成缩略图总图
