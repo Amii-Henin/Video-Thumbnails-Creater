@@ -79,9 +79,9 @@ def get_thumb(file,nfile,path_file,path):       #获取视频截图并生成缩�
     height_each_pic = int(((height*width_each_pic)/width)//1)       #定义每张缩略图高度
     if (sec < 10):                                                  #判断时间长短
         return 1
-    info = '文件名 :\n' + '大  小   :  ' + size + ' (' + \
+    info = '文件名 :\n' + '大    小 :  ' + size + ' (' + \
            str(byte) + ' Byte)\n' + '长宽比 :  ' + str(width) + 'x' + \
-           str(height) + ' (' + bl + '), FPS: ' + fps + '\n时  长   :  ' + vtime
+           str(height) + ' (' + bl + '), FPS: ' + fps + '\n时    长 :  ' + vtime
     info_name = '文件名 :  '
     tname = path + '\\' + nfile + '_thumb.jpg'
     num, row, jg = get_row(sec)
@@ -100,7 +100,7 @@ def get_thumb(file,nfile,path_file,path):       #获取视频截图并生成缩�
     
     vinfo_img = Image.new('RGB',(width_default,lh),"white")             #新建信息条底图
     font = ImageFont.truetype('fonts\\杨任东竹石体-Heavy.ttf',tsize_info)
-    font_1 = ImageFont.truetype('fonts\\Alibaba-PuHuiTi-Medium.ttf',int((tsize_info * 0.85)//1))
+    font_1 = ImageFont.truetype('fonts\\ali.ttf',int((tsize_info * 0.85)//1))
     if check_font(file):
         font_1 = font
         ftype = 1
