@@ -27,7 +27,7 @@ def start(path):
         try:
             get_thumb(path,f)
         except:
-            save_log(',"Error"\n')
+            save_log(os.path.join(path,f) + ',"Error"\n')
             print ('【Error File】',os.path.join(path,f))
     if len(path_list):
         for p in path_list:
