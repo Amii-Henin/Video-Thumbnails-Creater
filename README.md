@@ -16,7 +16,7 @@ Create Video Thumbnails. 创建视频缩略图，网格状，可自定义列数�
 
 运行截图如下：
 
-![image](https://github.com/Amii-Henin/Video-Thumbnails-Creater/blob/19b18d5f72d31ae8db5daf3a51133870730c4896/sample/get_video_thumb_running.jpg)
+![image](https://github.com/Amii-Henin/Video-Thumbnails-Creater/blob/2f48c5e14638d876d04f199eb3bbc5ea6b972669/sample/get_video_thumb_running.jpg)
 
 
 缩略图效果图如下：
