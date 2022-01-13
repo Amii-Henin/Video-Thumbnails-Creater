@@ -17,7 +17,7 @@ Image.MAX_IMAGE_PIXELS = None
 
 logname = 'get_video_thumb_log.json'                                    # 日志文件名
 logpath = 'D:\Sources\PY\get_video_thumb\log\\'                         # 日志位置
-fontpath = 'D:\Sources\PY\get_video_thumb\\fonts\\TW_remix.ttf'         # 字体位置
+fontpath = 'D:\Sources\PY\get_video_thumb\\fonts\\TW_remix.ttf'         # 字体位置 (建议用字体软件混合多种语言字体)
 now = time.strftime('%Y-%m-%d_%H-%M-%S',time.localtime(time.time()))    # 当前时间
 
 # 主控制
