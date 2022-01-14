@@ -22,19 +22,19 @@ now = time.strftime('%Y-%m-%d_%H-%M-%S',time.localtime(time.time()))    # 当前
 
 # 主控制
 def start(path):
-    file_list,path_list = get_list(path)
-    for f in file_list:
+    file_list,path_list = get_list(path)        # 获取文件、目录列表
+    for f in file_list:                         # 循环文件列表
         try:
-            if get_thumb(path,f):
+            if get_thumb(path,f):               # 截取缩略图，若返回True删除占位缩略图
                 delete_thumb(path,f)
                 save_log('"' + os.path.join(path,f) + '", "跳过"\n')
         except:
             save_log(',' + os.path.join(path,f) + ',"Error"\n')
             print ('【Error File】',os.path.join(path,f))
             delete_thumb(path,f)
-    if len(path_list):
+    if len(path_list):                          # 如本级有目录则循环递归调用
         for p in path_list:
-            start(p)                # 如本级有目录则循环递归调用
+            start(p)
 
 # 获取视频截图并保存
 def get_thumb(path, file):
@@ -42,32 +42,28 @@ def get_thumb(path, file):
     nfile = os.path.splitext(file)[0]
     pfile = os.path.join(path,file)
     tname = os.path.join(path, nfile + '_thumb.jpg')
-        # 已存在缩略图
-    if (os.path.exists(tname)): return False
-    with open(tname, 'w') as f: pass
-    cap = cv2.VideoCapture(pfile)
-    frames, fps, durations, tim, width, height = get_info(cap)
-        # 长宽互换检测
-    if (rotate % 2):
+    if (os.path.exists(tname)): return False    # 已存在缩略图
+    with open(tname, 'w') as f: pass            # 生成占位缩略图
+    cap = cv2.VideoCapture(pfile)               # 读取视频文件
+    frames, fps, durations, tim, width, height = get_info(cap)  # 获取视频信息
+    if (rotate % 2):                            # 长宽互换检测
         temp = width
         width = height
         height = temp
-    bl = str(fractions.Fraction(width, height))
-        # 帧数为零
-    if frames == 0: return True
-        # 时间过短
-    if (durations < 5): return True
-    byte = os.path.getsize(pfile)
-    bytes = format(byte, ",")
-    size = hum_convert(byte)
+    bl = str(fractions.Fraction(width, height)) # 比例设置
+    if frames == 0: return True                 # 帧数为零，返回True，删除生成的占位缩略图
+    if (durations < 5): return True             # 时间过短，返回True，删除生成的占位缩略图
+    byte = os.path.getsize(pfile)               # 获取文件字节大小
+    bytes = format(byte, ",")                   # 格式化字节大小
+    size = hum_convert(byte)                    # 字节转MB、GB
     save_log('"' + os.path.join(path,file) + '",')
 
     # 缩略图数据设置
     col_default = col_def
-    xs = width_default/3840             # 比例系数
-    tsize_info = int((64 * xs)//1)      # 视频信息文字大小
-    tsize_filename = int((64 * xs)//1)  # 文件名文字大小
-    tsize_time = int((36 * xs)//1)      # 时间信息文字大小
+    xs = width_default/3840                 # 比例系数
+    tsize_info = int((64 * xs)//1)          # 视频信息文字大小
+    tsize_filename = int((64 * xs)//1)      # 文件名文字大小
+    tsize_time = int((36 * xs)//1)          # 时间信息文字大小
     logo = "-- by AMII"
     if rotate == 0 and (height/width) > 1.2 and col_default == 4:
         col_default = 5                                                 # 竖版视频一行5张图
@@ -78,11 +74,10 @@ def get_thumb(path, file):
            str(height) + ' (' + bl + '),  FPS: ' + str(fps) + '\n时    长 :  ' + tim
     info_name = '文件名 :  '
     num, row, jg = get_row(durations,col_default)
-    lw = 0                                          # 左上角坐标宽度
-    lh = int((330 * xs)//1)                         # 左上角坐标高度
-    height_full = height_each_pic * row + lh        # 总图高度
-        # 图片高度大于65530则增加每行图片数量
-    while (height_full > 65530):
+    lw = 0                                      # 左上角坐标宽度
+    lh = int((330 * xs)//1)                     # 左上角坐标高度
+    height_full = height_each_pic * row + lh    # 总图高度
+    while (height_full > 65530):                # 图片高度大于65530则增加每行图片数量
         col_default += 1
         width_each_pic = int((width_default/col_default)//1)
         height_each_pic = int(((height*width_each_pic)/width)//1)
@@ -117,7 +112,7 @@ def get_thumb(path, file):
         save_log(',' + str(i+1))
         rotate_deg = [Image.ROTATE_90,Image.ROTATE_180,Image.ROTATE_270]
         time = jg * i + jg
-        # if ((i + 1) == num):            ####【调试】####
+        # if ((i + 1) == num):                                  ####【调试】####
         #     # continue
         #     time -= 1
         ttt = str(datetime.timedelta(seconds=time))
@@ -153,34 +148,33 @@ def get_list(path):
     rule = r"\.(avi|wmv|wmp|wm|asf|mpg|mpeg|mpe|m1v|m2v|mpv2|mp2v|ts|tp|tpr|trp|vob|ogm|ogv|mp4|m4v|m4p|m4b|3gp|3gpp|3g2|3gp2|mkv|rm|ram|rmvb|rpm|flv|swf|mov|qt|nsv|dpg|m2ts|m2t|mts|dvr-ms|k3g|skm|evo|nsr|amv|divx|webm|wtv|f4v|mxf)$"
     lists = os.listdir(path)
     for p in lists:
-        if re.search("\$RECYCLE\.BIN|System Volume Information|Recovery",p):
-            continue
+        if re.search("\$RECYCLE\.BIN|System Volume Information|Recovery",p): continue   # 排除windows系统文件夹
         if os.path.isdir(os.path.join(path,p)):
-            path_list.append(os.path.join(path,p))
+            path_list.append(os.path.join(path,p))      # 追加文件夹
             continue
         if re.search(rule, p, re.IGNORECASE):
-            file_list.append(p)
+            file_list.append(p)                         # 追加文件
     return (file_list, path_list)
 
 # 获取视频基本信息
 def get_info(cap):
-    frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    fps = round(cap.get(cv2.CAP_PROP_FPS))
-    durations = int(frames / fps)
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    tim = str(datetime.timedelta(seconds=durations))
-    tim = '0' + tim if len(tim) == 7  else tim
+    frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))     # 总帧数
+    fps = round(cap.get(cv2.CAP_PROP_FPS))              # 帧率
+    durations = int(frames / fps)                       # 时间
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))      # 宽度
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))    # 高度
+    tim = str(datetime.timedelta(seconds=durations))    # 格式化时间
+    tim = '0' + tim if len(tim) == 7  else tim          # 格式化时间前补零
     return (frames, fps, durations, tim, width, height)
 
 # 设定并返回图片个数、行数、间隔
 def get_row(sec,col):
     jg, num = (0,0)
-    if (sec <= 120): jg = s2
-    elif (sec <= 601): jg = s10
-    elif (sec <= 1801): jg = s30
-    elif (sec <= 3601): jg = s60
-    else : jg = sot
+    if (sec <= 120): jg = s2            # 2分钟内间隔
+    elif (sec <= 601): jg = s10         # 10分钟内间隔
+    elif (sec <= 1801): jg = s30        # 30分钟内间隔
+    elif (sec <= 3601): jg = s60        # 60分钟内间隔
+    else : jg = sot                     # 大于60分钟间隔
     num = sec//jg
     row = int((num + col -1) // col)
     return (num, row, jg)
