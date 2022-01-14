@@ -25,15 +25,16 @@ def start(path):
     file_list,path_list = get_list(path)
     for f in file_list:
         try:
-            get_thumb(path,f)
+            if get_thumb(path,f):
+                delete_thumb(path,f)
+                save_log('"' + os.path.join(path,f) + '", "跳过"\n')
         except:
             save_log(',' + os.path.join(path,f) + ',"Error"\n')
             print ('【Error File】',os.path.join(path,f))
-            nfile = os.path.splitext(f)[0]
-            os.remove(os.path.join(path,nfile + '_thumb.jpg'))
+            delete_thumb(path,f)
     if len(path_list):
         for p in path_list:
-            start(p)
+            start(p)                # 如本级有目录则循环递归调用
 
 # 获取视频截图并保存
 def get_thumb(path, file):
@@ -42,7 +43,7 @@ def get_thumb(path, file):
     pfile = os.path.join(path,file)
     tname = os.path.join(path, nfile + '_thumb.jpg')
         # 已存在缩略图
-    if (os.path.exists(tname)): return True
+    if (os.path.exists(tname)): return False
     with open(tname, 'w') as f: pass
     cap = cv2.VideoCapture(pfile)
     frames, fps, durations, tim, width, height = get_info(cap)
@@ -184,6 +185,18 @@ def get_row(sec,col):
     row = int((num + col -1) // col)
     return (num, row, jg)
 
+# 删除缩略图
+def delete_thumb(path,file):
+    nfile = os.path.splitext(file)[0] + '_thumb.jpg'
+    path_nfile = os.path.join(path,nfile)
+    if(os.path.exists(path_nfile)):
+        os.remove(path_nfile)
+
+# 保存日志
+def save_log(mess):
+    with open (os.path.join(logpath,logname),'a+',encoding='utf-8') as f:
+        f.write(mess)
+
 # 格式化并返回文件大小
 def hum_convert(value):
     units = [" B", " KB", " MB", " GB", " TB", " PB"]
@@ -192,11 +205,6 @@ def hum_convert(value):
         if (value / size) < 1:
             return "%.2f%s" % (value, units[i])
         value = value / size
-
-# 保存日志
-def save_log(mess):
-    with open (os.path.join(logpath,logname),'a+',encoding='utf-8') as f:
-        f.write(mess)
 
 if __name__ == '__main__':
     if not os.path.exists(logpath):
