@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 # 作者：AMII
-# 时间：2022-01-13
+# 时间：2022-01-14
 # 更新内容：弃用ffmpeg，改用OpenCV截取帧以提高速度
 # 脚本功能：为视频创建网格状缩略图，默认宽度3840，每行图片个数默认横版4张，竖版5张；默认间隔2分钟以下：2s，10分钟：5s，30分钟：15s，1小时：30s，其他：60s
 
@@ -15,9 +15,9 @@ import datetime
 from PIL import Image, ImageDraw, ImageFont
 Image.MAX_IMAGE_PIXELS = None
 
-logname = 'get_video_thumb_log.json'                                    # 日志文件名
+logname = 'get_video_thumb_log.json'                                    # 日志文件
 logpath = 'D:\Sources\PY\get_video_thumb\log\\'                         # 日志位置
-fontpath = 'D:\Sources\PY\get_video_thumb\\fonts\\TW_remix.ttf'         # 字体位置 (建议用字体软件混合多种语言字体)
+fontpath = 'D:\Sources\PY\get_video_thumb\\fonts\\TW_remix.ttf'         # 字体位置（建议用字体软件混合多种语言字体）
 now = time.strftime('%Y-%m-%d_%H-%M-%S',time.localtime(time.time()))    # 当前时间
 
 # 主控制
@@ -27,8 +27,10 @@ def start(path):
         try:
             get_thumb(path,f)
         except:
-            save_log(os.path.join(path,f) + ',"Error"\n')
+            save_log(',' + os.path.join(path,f) + ',"Error"\n')
             print ('【Error File】',os.path.join(path,f))
+            nfile = os.path.splitext(f)[0]
+            os.remove(os.path.join(path,nfile + '_thumb.jpg'))
     if len(path_list):
         for p in path_list:
             start(p)
@@ -107,24 +109,23 @@ def get_thumb(path, file):
     draw.text((int((40*xs)//1),int((24*xs)//1)),text=info,fill=(0,0,0),font=font)
     draw.text((width_default - logo_size[0] - 10, lh - logo_size[1] - 11), text=logo, fill=(0, 0, 0), font=font)
     fullimg.paste(vinfo_img,(0,0)) 
-        # 循环截取视频截图并粘贴至总图
     chk = 2
     print(nfile + '\n[',end="")
+        # 循环截取视频截图并粘贴至总图
     for i in range(num):
         save_log(',' + str(i+1))
         rotate_deg = [Image.ROTATE_90,Image.ROTATE_180,Image.ROTATE_270]
         time = jg * i + jg
-        # if (i == 25 or i == 35):                ####【调试】####
+        # if ((i + 1) == num):            ####【调试】####
         #     # continue
-        #     time -= (jg/2)//1
+        #     time -= 1
         ttt = str(datetime.timedelta(seconds=time))
         tt = '0' + ttt if len(ttt) == 7 else ttt
         time_size = font_time.getsize(tt)
         cap.set(cv2.CAP_PROP_POS_FRAMES, (time * fps) // 1)     # 设置截取帧数
         ret, frame = cap.read()
         frame = Image.fromarray(cv2.cvtColor(frame,cv2.COLOR_BGR2RGB))
-        # 截图旋转检测
-        if (rotate == 0):
+        if (rotate == 0):               # 截图旋转检测
             img = frame.resize((width_each_pic,height_each_pic),Image.ANTIALIAS)
         else:
             img = frame.transpose(rotate_deg[rotate - 1]).resize((width_each_pic,height_each_pic),Image.ANTIALIAS)
@@ -151,7 +152,7 @@ def get_list(path):
     rule = r"\.(avi|wmv|wmp|wm|asf|mpg|mpeg|mpe|m1v|m2v|mpv2|mp2v|ts|tp|tpr|trp|vob|ogm|ogv|mp4|m4v|m4p|m4b|3gp|3gpp|3g2|3gp2|mkv|rm|ram|rmvb|rpm|flv|swf|mov|qt|nsv|dpg|m2ts|m2t|mts|dvr-ms|k3g|skm|evo|nsr|amv|divx|webm|wtv|f4v|mxf)$"
     lists = os.listdir(path)
     for p in lists:
-        if re.search("\$RECYCLE\.BIN|System Volume Information",p):
+        if re.search("\$RECYCLE\.BIN|System Volume Information|Recovery",p):
             continue
         if os.path.isdir(os.path.join(path,p)):
             path_list.append(os.path.join(path,p))
@@ -210,5 +211,6 @@ if __name__ == '__main__':
     s30 = int(input('30分钟内间隔：') or 15)
     s60 = int(input('60分钟内间隔：') or 30)
     sot = int(input('大于60分钟间隔：') or 60)
-    save_log(now + ' ' + rootpath + '\n')
+    # stime = time.time()
+    save_log('\t' + now + ' ' + rootpath + '\n')
     start(rootpath)
