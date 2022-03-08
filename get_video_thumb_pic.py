@@ -10,12 +10,14 @@ import time
 import os
 import re
 import cv2
+import shutil
 import datetime
 import numpy as np
 # from PIL import Image, ImageDraw, ImageFont
 
+localpath = os.path.split(os.path.abspath(__file__))[0]                     # 当前位置
 logname = 'get_video_pic_log.json'                                          # 日志文件
-logpath = os.path.join(os.path.split(os.path.abspath(__file__))[0],'log')   # 日志位置
+logpath = os.path.join(localpath,'log')                                     # 日志位置
 now = time.strftime('%Y-%m-%d_%H-%M-%S',time.localtime(time.time()))        # 当前时间
 
 # 主控制
@@ -38,7 +40,7 @@ def get_pic(path, file):
     nfile = os.path.splitext(file)[0]           # 视频文件名
     pfile = os.path.join(path,file)             # 视频路径+文件名
     path_pic = os.path.join(path,'pics_' + nfile)   # 截图存放路径
-    temp_pic = os.path.join(path_pic,'0000.jpg')    # 临时文件
+    temp_pic = os.path.join(path_pic,'【0000】.jpg')    # 临时文件
     if not os.path.exists(path_pic):            # pics文件夹检测
         os.makedirs(path_pic)
     if (os.path.exists(temp_pic)): return True  # 已存在临时文件
@@ -57,11 +59,11 @@ def get_pic(path, file):
         if i and i % 500 == 0:
             save_log('\n')
         name_t = str(datetime.timedelta(seconds=((i + 1) * jg))).replace(":","-")
-        name_t = '0' + name_t if len(name_t) == 7 else name_t           # 文件名时间
+        name_t = '0' + name_t if len(name_t) == 7 else name_t   # 文件名时间
         tmp_name = 'temp__' + str(i) + '.jpg'           # 临时文件名
-        file_name = nfile + '【' + '{:0>4d}'.format(i) + '】' + name_t + '.jpg'   # 截图文件名
+        file_name = '【' + '{:0>4d}'.format(i+1) + '】' + name_t + '.jpg'   # 截图文件名
         path_file = os.path.join(path_pic,file_name)    # 截图路径加文件名
-        path_tmp = os.path.join(path_pic,tmp_name)      # 截图路径加临时文件名
+        path_tmp = os.path.join(localpath,tmp_name)      # 截图路径加临时文件名
         time_fps = int(((i + 1)* jg * fps) // 1)        # 时间帧数
         if os.path.exists(path_file):                   # 截图存在跳过
             save_log(',跳' + str(i+1))
@@ -89,7 +91,7 @@ def get_pic(path, file):
         if rotate: 
             frame = rotate_bound(frame, rotate)         # 旋转检测
         cv2.imwrite(path_tmp,frame)                     # 保存截图
-        if os.path.exists(path_tmp): os.renames(path_tmp,path_file)     # 替换文件名
+        if os.path.exists(path_tmp): shutil.move(path_tmp,path_file)     # 替换文件名并移动
         save_log(',' + str(i+1))
         if (((i + 1)/num)*100 > chk):                   # 进度条模块
             sn = int((((i + 1)/num)*100 - chk) / 2)
@@ -173,3 +175,6 @@ if __name__ == '__main__':
     # stime = time.time()
     save_log('\t' + now + ' ' + rootpath + '\n')
     start(rootpath)
+    # etime = time.time()
+    # print(etime - stime)
+    # save_log(str((etime - stime)) + '\n')
