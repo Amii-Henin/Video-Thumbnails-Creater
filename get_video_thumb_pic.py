@@ -56,7 +56,7 @@ def get_pic(path, file):
         loop_num = 0
         if i and i % 500 == 0:
             save_log('\n')
-        name_t = str(datetime.timedelta(seconds=((i + 1) * jg))).replace(":","：")
+        name_t = str(datetime.timedelta(seconds=((i + 1) * jg))).replace(":","-")
         name_t = '0' + name_t if len(name_t) == 7 else name_t           # 文件名时间
         tmp_name = 'temp__' + str(i) + '.jpg'           # 临时文件名
         file_name = nfile + '【' + '{:0>4d}'.format(i) + '】' + name_t + '.jpg'   # 截图文件名
