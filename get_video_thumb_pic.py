@@ -59,7 +59,7 @@ def get_pic(path, file):
         name_t = str(datetime.timedelta(seconds=((i + 1) * jg))).replace(":","：")
         name_t = '0' + name_t if len(name_t) == 7 else name_t           # 文件名时间
         tmp_name = 'temp__' + str(i) + '.jpg'           # 临时文件名
-        file_name = nfile + '【' + '{:0>4d}'.format(num) + '】' + name_t + '.jpg'   # 截图文件名
+        file_name = nfile + '【' + '{:0>4d}'.format(i) + '】' + name_t + '.jpg'   # 截图文件名
         path_file = os.path.join(path_pic,file_name)    # 截图路径加文件名
         path_tmp = os.path.join(path_pic,tmp_name)      # 截图路径加临时文件名
         time_fps = int(((i + 1)* jg * fps) // 1)        # 时间帧数
