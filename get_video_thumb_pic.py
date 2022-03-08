@@ -10,7 +10,6 @@ import time
 import os
 import re
 import cv2
-import shutil
 import datetime
 import numpy as np
 # from PIL import Image, ImageDraw, ImageFont
@@ -25,7 +24,7 @@ def start(path):
     file_list,path_list = get_list(path)        # 获取文件、目录列表
     for f in file_list:                         # 循环文件列表
         try:
-            if get_pic(path,f):               # 截取截图，如已存在截图则跳过
+            if get_pic(path,f):                 # 截取截图，如已存在截图则跳过
                 save_log('"' + os.path.join(path,f) + '", "跳过"\n')
         except:
             save_log('\n【----Error----】,' + os.path.join(path,f) + '\n')
@@ -60,10 +59,10 @@ def get_pic(path, file):
             save_log('\n')
         name_t = str(datetime.timedelta(seconds=((i + 1) * jg))).replace(":","-")
         name_t = '0' + name_t if len(name_t) == 7 else name_t   # 文件名时间
-        tmp_name = 'temp__' + str(i) + '.jpg'           # 临时文件名
+        # tmp_name = 'temp__' + str(i) + '.jpg'           # 临时文件名
         file_name = '【' + '{:0>4d}'.format(i+1) + '】' + name_t + '.jpg'   # 截图文件名
         path_file = os.path.join(path_pic,file_name)    # 截图路径加文件名
-        path_tmp = os.path.join(localpath,tmp_name)      # 截图路径加临时文件名
+        # path_tmp = os.path.join(localpath,tmp_name)     # 截图路径加临时文件名
         time_fps = int(((i + 1)* jg * fps) // 1)        # 时间帧数
         if os.path.exists(path_file):                   # 截图存在跳过
             save_log(',跳' + str(i+1))
@@ -87,11 +86,12 @@ def get_pic(path, file):
             loop_num += 1
         if dwidth: 
             dheight = int(((dwidth/width)*height)//1)
-            frame = cv2.resize(frame,(dwidth,dheight))   # 调整长宽
+            frame = cv2.resize(frame,(dwidth,dheight))  # 调整长宽
         if rotate: 
             frame = rotate_bound(frame, rotate)         # 旋转检测
-        cv2.imwrite(path_tmp,frame)                     # 保存截图
-        if os.path.exists(path_tmp): shutil.move(path_tmp,path_file)     # 替换文件名并移动
+        cv2.imencode('.jpg',frame)[1].tofile(path_file) # 保存截图
+        # cv2.imwrite(path_tmp,frame)                     # 保存截图
+        # if os.path.exists(path_tmp): shutil.move(path_tmp,path_file)     # 替换文件名并移动
         save_log(',' + str(i+1))
         if (((i + 1)/num)*100 > chk):                   # 进度条模块
             sn = int((((i + 1)/num)*100 - chk) / 2)
