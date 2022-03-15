@@ -30,3 +30,7 @@ Create Video Thumbnails. 创建视频缩略图，网格状，可自定义列数�
 ![image](https://github.com/Amii-Henin/Video-Thumbnails-Creater/blob/47baa639146459899c39fddd458b1fc096cfc162/sample/SinglePic.png)
 
 ![image](https://github.com/Amii-Henin/Video-Thumbnails-Creater/blob/47baa639146459899c39fddd458b1fc096cfc162/sample/SinglePics.png)
+
+如果你想请我喝咖啡☕☕
+![image](https://github.com/Amii-Henin/Video-Thumbnails-Creater/blob/41e48b2e3b442e2ae00a2020145227ee6f0ad37f/sample/wx.jpg)![image](https://github.com/Amii-Henin/Video-Thumbnails-Creater/blob/41e48b2e3b442e2ae00a2020145227ee6f0ad37f/sample/zfb.jpg)
+阔乐也很不错，可口、百世都喜欢🥤🥤
